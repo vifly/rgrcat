@@ -71,10 +71,13 @@ fn get_config_path(config_name: &String) -> Option<String> {
 
 
 fn is_config_split_line(line: &String) -> bool {
+    // It's a comment line.
     if line.starts_with('#') {
         false
+    // It's a blank line.
     } else if line.eq(&"".to_string()) {
         false
+    // First char not in ascii alphabet, so it's a split line.
     } else if !line.chars().next().unwrap().is_ascii_alphabetic() {
         true
     } else {
