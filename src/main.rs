@@ -45,7 +45,7 @@ fn get_config_path(config_name: &String) -> Option<String> {
     let home_path = PathBuf::from(&home);
     let mut xdg_config_path = PathBuf::from(&xdg_config);
     let mut xdg_data_path = PathBuf::from(&xdg_data);
-    let mut config_path: Vec<PathBuf> = vec![];
+    let mut config_dir: Vec<PathBuf> = vec![];
 
     if xdg_config_path.eq(&OsString::from("")) {
         xdg_config_path = home_path.join(".config/grc");
@@ -54,15 +54,16 @@ fn get_config_path(config_name: &String) -> Option<String> {
         xdg_data_path = home_path.join(".local/share/grc");
     }
 
-    config_path.push(xdg_config_path);
-    config_path.push(xdg_data_path);
-    config_path.push(home_path.join(".grc"));
-    config_path.push(PathBuf::from("/usr/local/share/grc"));
-    config_path.push(PathBuf::from("/usr/share/grc"));
+    config_dir.push(xdg_config_path);
+    config_dir.push(xdg_data_path);
+    config_dir.push(home_path.join(".grc"));
+    config_dir.push(PathBuf::from("/usr/local/share/grc"));
+    config_dir.push(PathBuf::from("/usr/share/grc"));
 
-    for path in config_path {
-        if path.exists() && !path.is_dir() {
-            return Some(String::from(path.to_str().unwrap()));
+    for dir in config_dir {
+        let config_file_path = dir.join(config_name);
+        if config_file_path.exists() && !config_file_path.is_dir() {
+            return Some(String::from(config_file_path.to_str().unwrap()));
         }
     }
     eprintln!("config file [{}] not found", config_name);
