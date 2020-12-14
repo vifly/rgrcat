@@ -292,9 +292,9 @@ fn get_output_line_by_config(line: &str, config_list: &Vec<ColourConfig>) -> Str
     let mut result = line.clone().to_string();
     for config in config_list {
         if config.count.eq("block") {
-            get_colour_str(line, &config.colours[0]);
+            result = get_colour_str(line, &config.colours[0]);
         } else if config.count.eq("unblock") {
-            get_colour_str(line, &get_colour("default"));
+            result = get_colour_str(line, &get_colour("default"));
         } else {
             if !&config.colours.contains(&"unchanged".to_string()) {
                 let re = Regex::new(&config.regexp[..]).unwrap();
