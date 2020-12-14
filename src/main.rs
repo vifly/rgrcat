@@ -75,10 +75,10 @@ fn is_config_split_line(line: &String) -> bool {
     // It's a comment line.
     if line.starts_with('#') {
         false
-    // It's a blank line.
+        // It's a blank line.
     } else if line.eq(&"".to_string()) {
         false
-    // First char not in ascii alphabet, so it's a split line.
+        // First char not in ascii alphabet, so it's a split line.
     } else if !line.chars().next().unwrap().is_ascii_alphabetic() {
         true
     } else {
@@ -246,7 +246,8 @@ impl ColourConfig {
     fn insert_content(&mut self, content: &Vec<(String, String)>) {
         for item in content {
             if item.0.eq("regexp") {
-                self.regexp = item.1.clone();
+                // workaround for dig conf line 2
+                self.regexp = item.1.clone().replace("\\:", "\\\\:");
             } else if item.0.eq("colours") {
                 self.colours = get_colour_list(&item.1);
             } else if item.0.eq("count") {
@@ -297,7 +298,10 @@ fn get_output_line_by_config(line: &str, config_list: &Vec<ColourConfig>) -> Str
             result = get_colour_str(line, &get_colour("default"));
         } else {
             if !&config.colours.contains(&"unchanged".to_string()) {
-                let re = Regex::new(&config.regexp[..]).unwrap();
+                let re = match Regex::new(&config.regexp[..]) {
+                    Ok(re) => re,
+                    Err(_e) => continue
+                };
                 // Todo config.colours[0] is temp
                 result = get_colour_line_by_re(&result, &config.colours[0], &re);
             }
